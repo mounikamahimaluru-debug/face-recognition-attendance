@@ -1,0 +1,215 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f3f6fb;
+    color: #243047;
+    line-height: 1.5;
+}
+
+header {
+    background: #173b70;
+    color: white;
+    text-align: center;
+    padding: 25px 15px;
+}
+
+header h1 {
+    font-size: 26px;
+    margin-bottom: 8px;
+}
+
+nav {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 15px;
+    background: white;
+}
+
+button {
+    background: #2463a6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 11px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    margin: 4px 2px;
+}
+
+button:hover {
+    background: #174779;
+}
+
+main {
+    max-width: 1100px;
+    margin: 25px auto;
+    padding: 0 16px;
+}
+
+.section {
+    background: white;
+    padding: 24px;
+    margin-bottom: 22px;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px #0000000d;
+}
+
+.section h2 {
+    margin-bottom: 18px;
+    color: #173b70;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.card {
+    background: #eaf2ff;
+    padding: 22px;
+    border-radius: 10px;
+    border-left: 5px solid #2463a6;
+}
+
+.card p {
+    font-size: 30px;
+    font-weight: bold;
+    margin-top: 8px;
+}
+
+form {
+    max-width: 600px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin: 13px 0 6px;
+}
+
+input,
+select {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    background: white;
+    font-size: 15px;
+}
+
+input:focus,
+select:focus {
+    outline: 2px solid #80b7f5;
+    border-color: #2463a6;
+}
+
+form button {
+    margin-top: 18px;
+}
+
+#studentMessage,
+#cameraMessage {
+    margin-top: 12px;
+    overflow-wrap: anywhere;
+}
+
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 15px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 550px;
+}
+
+th,
+td {
+    border: 1px solid #dbe2ec;
+    padding: 11px;
+    text-align: left;
+}
+
+th {
+    background: #eaf2ff;
+    color: #173b70;
+}
+
+tr:nth-child(even) {
+    background: #f8faff;
+}
+
+.camera-box {
+    position: relative;
+    max-width: 500px;
+    margin: 15px 0;
+    background: #111827;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+#video {
+    display: block;
+    width: 100%;
+    min-height: 220px;
+    object-fit: cover;
+}
+
+#faceCanvas {
+    display: none;
+}
+
+footer {
+    background: #173b70;
+    color: white;
+    text-align: center;
+    padding: 18px;
+    margin-top: 30px;
+}
+
+@media (max-width: 600px) {
+    header h1 {
+        font-size: 21px;
+    }
+
+    nav {
+        padding: 10px;
+        gap: 5px;
+    }
+
+    nav button {
+        flex: 1 1 40%;
+    }
+
+    main {
+        margin: 15px auto;
+        padding: 0 10px;
+    }
+
+    .section {
+        padding: 16px;
+    }
+
+    .cards {
+        grid-template-columns: 1fr;
+    }
+
+    button {
+        max-width: 100%;
+    }
+}
