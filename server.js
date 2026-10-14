@@ -3,25 +3,21 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const path = require("path");
 
+dotenv.config();
+
 const Student = require("./models/Student");
 const Attendance = require("./models/Attendance");
-
-dotenv.config();
 
 const app = express();
 
 app.use(express.json({ limit: "1mb" }));
 app.use(express.static(path.join(__dirname, "public")));
 
-// Home page
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// =====================================
-// 1. REGISTER STUDENT
-// =====================================
-
+// Register student
 app.post("/api/students", async (req, res) => {
     try {
         const { name, rollNumber, department, year, section } = req.body;
@@ -44,26 +40,18 @@ app.post("/api/students", async (req, res) => {
             message: "Student registered successfully",
             student
         });
-
     } catch (error) {
-        if (error.code === 11000) {
-            return res.status(409).json({
-                message: "This roll number already exists"
-            });
-        }
-
         console.error("Student registration error:", error);
 
-        res.status(500).json({
-            message: "Unable to register student"
+        res.status(error.code === 11000 ? 409 : 500).json({
+            message: error.code === 11000
+                ? "This roll number already exists"
+                : "Unable to register student"
         });
     }
 });
 
-// =====================================
-// 2. GET ALL STUDENTS
-// =====================================
-
+// Get students
 app.get("/api/students", async (req, res) => {
     try {
         const students = await Student.find()
@@ -71,65 +59,41 @@ app.get("/api/students", async (req, res) => {
             .sort({ name: 1 });
 
         res.json(students);
-
     } catch (error) {
-        console.error("Get students error:", error);
-
-        res.status(500).json({
-            message: "Unable to get students"
-        });
+        console.error(error);
+        res.status(500).json({ message: "Unable to get students" });
     }
 });
 
-// =====================================
-// 3. DELETE STUDENT
-// =====================================
-
+// Delete student
 app.delete("/api/students/:id", async (req, res) => {
     try {
         if (!mongoose.isValidObjectId(req.params.id)) {
-            return res.status(400).json({
-                message: "Invalid student ID"
-            });
+            return res.status(400).json({ message: "Invalid student ID" });
         }
 
         const student = await Student.findByIdAndDelete(req.params.id);
 
         if (!student) {
-            return res.status(404).json({
-                message: "Student not found"
-            });
+            return res.status(404).json({ message: "Student not found" });
         }
 
-        await Attendance.deleteMany({
-            student: student._id
-        });
+        await Attendance.deleteMany({ student: student._id });
 
-        res.json({
-            message: "Student deleted successfully"
-        });
-
+        res.json({ message: "Student deleted successfully" });
     } catch (error) {
-        console.error("Delete student error:", error);
-
-        res.status(500).json({
-            message: "Unable to delete student"
-        });
+        console.error(error);
+        res.status(500).json({ message: "Unable to delete student" });
     }
 });
 
-// =====================================
-// 4. REGISTER STUDENT FACE
-// =====================================
-
+// Register face
 app.put("/api/students/:id/face", async (req, res) => {
     try {
         const { faceDescriptor } = req.body;
 
         if (!mongoose.isValidObjectId(req.params.id)) {
-            return res.status(400).json({
-                message: "Invalid student ID"
-            });
+            return res.status(400).json({ message: "Invalid student ID" });
         }
 
         if (
@@ -147,88 +111,53 @@ app.put("/api/students/:id/face", async (req, res) => {
         const student = await Student.findByIdAndUpdate(
             req.params.id,
             { $set: { faceDescriptor } },
-            {
-                new: true,
-                runValidators: true
-            }
+            { new: true, runValidators: true }
         );
 
         if (!student) {
-            return res.status(404).json({
-                message: "Student not found"
-            });
+            return res.status(404).json({ message: "Student not found" });
         }
 
-        res.json({
-            message: "Face registered successfully"
-        });
-
+        res.json({ message: "Face registered successfully" });
     } catch (error) {
-        console.error("Face registration error:", error);
-
-        res.status(500).json({
-            message: "Unable to register face"
-        });
+        console.error(error);
+        res.status(500).json({ message: "Unable to register face" });
     }
 });
 
-// =====================================
-// 5. GET REGISTERED FACES
-// =====================================
-
-// Face descriptors are sensitive biometric data.
-// Protect this endpoint with authentication before public deployment.
+// Get registered faces
 app.get("/api/students/faces", async (req, res) => {
     try {
         const students = await Student.find({
-            faceDescriptor: {
-                $exists: true,
-                $type: "array"
-            }
+            faceDescriptor: { $exists: true, $type: "array" }
         }).select("name rollNumber faceDescriptor");
 
-        const validStudents = students.filter(student =>
+        res.json(students.filter(student =>
             Array.isArray(student.faceDescriptor) &&
             student.faceDescriptor.length === 128 &&
-            student.faceDescriptor.every(
-                value => Number.isFinite(value)
-            )
-        );
-
-        res.json(validStudents);
-
+            student.faceDescriptor.every(Number.isFinite)
+        ));
     } catch (error) {
-        console.error("Get registered faces error:", error);
-
-        res.status(500).json({
-            message: "Unable to load registered faces"
-        });
+        console.error(error);
+        res.status(500).json({ message: "Unable to load registered faces" });
     }
 });
 
-// =====================================
-// 6. MARK ATTENDANCE USING STUDENT ID
-// =====================================
-
+// Mark attendance
 app.post("/api/attendance", async (req, res) => {
     try {
         const { studentId } = req.body;
 
         if (!studentId || !mongoose.isValidObjectId(studentId)) {
-            return res.status(400).json({
-                message: "Valid student ID required"
-            });
+            return res.status(400).json({ message: "Valid student ID required" });
         }
 
         const student = await Student.findById(studentId);
 
         if (!student) {
-            return res.status(404).json({
-                message: "Student not found"
-            });
+            return res.status(404).json({ message: "Student not found" });
         }
 
-        // Indian date and time
         const now = new Date();
 
         const date = new Intl.DateTimeFormat("en-CA", {
@@ -260,26 +189,18 @@ app.post("/api/attendance", async (req, res) => {
             rollNumber: student.rollNumber,
             attendance
         });
-
     } catch (error) {
-        if (error.code === 11000) {
-            return res.status(409).json({
-                message: "Attendance already marked today"
-            });
-        }
-
         console.error("Mark attendance error:", error);
 
-        res.status(500).json({
-            message: "Unable to mark attendance"
+        res.status(error.code === 11000 ? 409 : 500).json({
+            message: error.code === 11000
+                ? "Attendance already marked today"
+                : "Unable to mark attendance"
         });
     }
 });
 
-// =====================================
-// 7. GET ATTENDANCE REPORT
-// =====================================
-
+// Attendance report
 app.get("/api/attendance", async (req, res) => {
     try {
         const records = await Attendance.find()
@@ -287,26 +208,17 @@ app.get("/api/attendance", async (req, res) => {
             .sort({ date: -1, time: -1 });
 
         res.json(records);
-
     } catch (error) {
-        console.error("Attendance report error:", error);
-
-        res.status(500).json({
-            message: "Unable to get attendance report"
-        });
+        console.error(error);
+        res.status(500).json({ message: "Unable to get attendance report" });
     }
 });
 
-// =====================================
-// 8. START SERVER AFTER DATABASE CONNECTS
-// =====================================
-
+// Start server
 const PORT = process.env.PORT || 3000;
 
 if (!process.env.MONGO_URL) {
-    console.error(
-        "MONGO_URL missing. Please check your .env file."
-    );
+    console.error("MONGO_URL missing. Check Render Environment Variables.");
     process.exit(1);
 }
 
@@ -315,14 +227,10 @@ mongoose.connect(process.env.MONGO_URL)
         console.log("MongoDB Connected Successfully");
 
         app.listen(PORT, "0.0.0.0", () => {
-            console.log(`Server running at http://localhost:${PORT}`);
+            console.log(`Server running on port ${PORT}`);
         });
     })
     .catch(error => {
-        console.error(
-            "MongoDB connection failed:",
-            error.message
-        );
-
+        console.error("MongoDB connection failed:", error.message);
         process.exit(1);
     });
