@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon"href="data:,">
+    <title>Face Recognition Attendance System</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f3f6fa;
+            color: #222;
+        }
+
+        header {
+            background: #174a8b;
+            color: white;
+            text-align: center;
+            padding: 22px 10px;
+        }
+
+        header h1 {
+            margin: 0 0 8px;
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 15px;
+            background: white;
+        }
+
+        button {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 5px;
+            background: #1769aa;
+            color: white;
+            cursor: pointer;
+            margin: 4px;
+        }
+
+        button:hover {
+            background: #104a7a;
+        }
+
+        main {
+            max-width: 1100px;
+            margin: 20px auto;
+            padding: 15px;
+        }
+
+        .section {
+            background: white;
+            padding: 22px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px #00000010;
+            margin-bottom: 20px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .card {
+            flex: 1;
+            min-width: 180px;
+            padding: 20px;
+            background: #e6f2ff;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .card p {
+            font-size: 28px;
+            font-weight: bold;
+            color: #174a8b;
+        }
+
+        form {
+            max-width: 500px;
+        }
+
+        label {
+            display: block;
+            margin-top: 12px;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #bbb;
+            border-radius: 5px;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 550px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background: #174a8b;
+            color: white;
+        }
+
+        video {
+            width: 100%;
+            max-width: 480px;
+            min-height: 200px;
+            background: #222;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .camera-box {
+            margin-top: 10px;
+        }
+
+        footer {
+            background: #174a8b;
+            color: white;
+            text-align: center;
+            padding: 15px;
+        }
+
+        #studentMessage,
+        #cameraMessage {
+            overflow-wrap: anywhere;
+        }
+
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 23px;
+            }
+
+            nav {
+                flex-direction: column;
+            }
+
+            nav button {
+                width: 100%;
+                margin: 0;
+            }
+
+            main {
+                padding: 10px;
+            }
+
+            .section {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Face Recognition Attendance System</h1>
+    <p>Smart Student Attendance Management</p>
+</header>
+
+<nav>
+    <button type="button" onclick="showSection('dashboard')">
+        Dashboard
+    </button>
+
+    <button type="button" onclick="showSection('students')">
+        Students
+    </button>
+
+    <button type="button" onclick="showSection('recognition')">
+        Face Recognition
+    </button>
+
+    <button type="button" onclick="showSection('attendance')">
+        Attendance Reports
+    </button>
+</nav>
+
+<main>
+
+    <!-- Dashboard -->
+    <section id="dashboard" class="section">
+        <h2>Dashboard</h2>
+
+        <div class="cards">
+            <div class="card">
+                <h3>Total Students</h3>
+                <p id="totalStudents">0</p>
+            </div>
+
+            <div class="card">
+                <h3>Attendance Records</h3>
+                <p id="totalAttendance">0</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Student Registration -->
+    <section id="students" class="section hidden">
+        <h2>Student Registration</h2>
+
+        <form id="studentForm">
+
+            <label for="name">Student Name</label>
+            <input type="text" id="name"
+                   placeholder="Enter student name" required>
+
+            <label for="rollNumber">Roll Number</label>
+            <input type="text" id="rollNumber"
+                   placeholder="Enter roll number" required>
+
+            <label for="department">Department</label>
+            <select id="department" required>
+                <option value="">Select Department</option>
+                <option value="CSE">CSE</option>
+                <option value="CSE-IoT">CSE-IoT</option>
+                <option value="AIML">AIML</option>
+                <option value="AI">AI</option>
+                <option value="ECE">ECE</option>
+                <option value="EEE">EEE</option>
+                <option value="MBA">MBA</option>
+            </select>
+
+            <label for="year">Year</label>
+            <select id="year" required>
+                <option value="">Select Year</option>
+                <option value="1st Year">1st Year</option>
+                <option value="2nd Year">2nd Year</option>
+                <option value="3rd Year">3rd Year</option>
+                <option value="4th Year">4th Year</option>
+            </select>
+
+            <label for="section">Section</label>
+            <select id="section" required>
+                <option value="">Select Section</option>
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+            </select>
+
+            <button type="submit">Save Student</button>
+
+            <p id="studentMessage" role="status"></p>
+        </form>
+
+        <h3>Registered Students</h3>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Roll Number</th>
+                        <th>Department</th>
+                        <th>Year</th>
+                        <th>Section</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody id="studentsTable"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Face Recognition -->
+    <section id="recognition" class="section hidden">
+        <h2>Face Registration and Recognition</h2>
+
+        <p>Select a registered student before registering their face.</p>
+
+        <label for="faceStudent">Select Student</label>
+
+        <select id="faceStudent">
+            <option value="">Select Student</option>
+        </select>
+
+        <div class="camera-box">
+            <video id="video" autoplay muted playsinline></video>
+        </div>
+
+        <p id="cameraMessage" role="status"></p>
+
+        <button type="button" id="startCamera">
+            Start Camera
+        </button>
+
+        <button type="button" id="registerFace">
+            Register Face
+        </button>
+
+        <button type="button" id="recognizeFace">
+            Recognize Face &amp; Mark Attendance
+        </button>
+
+        <button type="button" id="stopCamera">
+            Stop Camera
+        </button>
+    </section>
+
+    <!-- Attendance Reports -->
+    <section id="attendance" class="section hidden">
+        <h2>Attendance Reports</h2>
+
+        <label for="attendanceDate">Filter by Date</label>
+        <input type="date" id="attendanceDate">
+
+        <button type="button" id="loadAttendance">
+            Load Attendance
+        </button>
+
+        <button type="button" id="downloadCSV">
+            Download CSV
+        </button>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Roll Number</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody id="attendanceTable"></tbody>
+            </table>
+        </div>
+    </section>
+
+</main>
+
+<footer>
+    <p>Face Recognition Attendance System</p>
+</footer>
+
+<!-- Navigation function -->
+<script>
+window.showSection = function(id) {
+    const sections = document.querySelectorAll("main .section");
+
+    sections.forEach(function(section) {
+        section.classList.add("hidden");
+    });
+
+    const selectedSection = document.getElementById(id);
+
+    if (selectedSection) {
+        selectedSection.classList.remove("hidden");
+    }
+
+    if (id === "students" &&
+        typeof window.loadStudents === "function") {
+        window.loadStudents();
+    }
+
+    if (id === "attendance" &&
+        typeof window.loadAttendance === "function") {
+        window.loadAttendance();
+    }
+
+    if (id === "dashboard" &&
+        typeof window.loadDashboard === "function") {
+        window.loadDashboard();
+    }
+};
+</script>
+
+<!-- Face recognition library -->
+<script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+
+<!-- Application JavaScript -->
+<script defer src="script.js"></script>
+
+</body>
+</html>
